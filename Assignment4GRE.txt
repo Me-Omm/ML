@@ -1,0 +1,68 @@
+import pandas as pd
+import numpy as np
+
+
+data = pd.read_csv("D:/SEM-5/ML/Assignments/My Codes/Admission_Predict.csv")
+data.head()
+
+print("Shape of the dataset",data.shape)
+
+
+print("Coulmns in the dataset\n")
+data.columns.tolist()
+
+data['Chance of Admit '] = data['Chance of Admit '].apply(lambda x:1 if x >= 0.5 else 0)
+
+data.head()
+
+x=data[['GRE Score','TOEFL Score','University Rating','SOP','LOR ','CGPA','Research']]
+y=data['Chance of Admit ']
+
+from sklearn.model_selection import train_test_split
+
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.2,random_state = 42)
+
+from sklearn.tree import DecisionTreeClassifier
+
+model = DecisionTreeClassifier(criterion = 'entropy' , random_state = 42)
+model.fit(x_train,y_train)
+
+y_pred = model.predict(x_test)
+
+from sklearn.metrics import accuracy_score,classification_report
+
+Accuracy = accuracy_score(y_test,y_pred)
+print("Accuracy of the Decision Tree Classifier : ",Accuracy);
+
+Classification_report = classification_report(y_test,y_pred)
+print("Classification Report of the Decision Tree Classifier \n",Classification_report);
+
+from sklearn.linear_model import LogisticRegression
+
+li_model = LogisticRegression(max_iter=1000)
+li_model.fit(x_train,y_train)
+
+y_pred_li = li_model.predict(x_test)
+
+Accuracy_li = accuracy_score(y_test,y_pred_li)
+print("Accuracy of Logistic Regression Model",Accuracy_li);
+
+Classification_report_li = classification_report(y_test,y_pred_li)
+print("Classification Report of Logistic Regression :\n" , Classification_report_li)
+
+#Example
+data.columns.tolist()
+
+
+#example
+new_student = pd.DataFrame([[330, 115, 4, 4.5, 4.5, 9.0, 1],[320,115, 4, 4.5, 4.5,7.0, 1]],columns = x.columns)
+ad_prediction = model.predict(new_student)
+print("The Prediction of Admission using Decision Tree Classifier for student with GRE score 330 is :" , ad_prediction[0])
+
+li_prediction_li = li_model.predict(new_student)
+print("The Prediction of Admission using Logistic Regression for student with GRE score 330 is :" , li_prediction_li[0])
+
+
+
+
+

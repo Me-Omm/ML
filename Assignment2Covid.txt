@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+
+data = pd.read_excel("D:/SEM-5/ML/Assignments/My Codes/covid_dataset_500_entries.xlsx")
+data.head()
+
+print("The shape of the dataset is :",data.shape)
+
+#No. of missing values in the set   //basically data cleaining
+data.isnull().sum()
+
+data['Actual'] = data['Actual'].map({"Positive":1,"Negative":0})
+data['Predicted'] = data['Predicted'].map({"Positive":1,"Negative":0})
+
+data.head()
+
+X=data['Actual']
+Y=data['Predicted']
+
+from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
+
+accuracy = accuracy_score(X,Y)
+precision = precision_score(X,Y)
+recall = recall_score(X,Y)
+f1 = f1_score(X,Y)
+
+print("Accuracy :",accuracy)
+print("Precision :",precision)
+print("Recall :",recall)
+print("F1 Score :",f1 )
+
+from sklearn.metrics import confusion_matrix
+
+tn,fp,fn,tp = confusion_matrix(X,Y).ravel()
+
+conf_matrix = np.array([[tn,fp],[fn,tp]])
+
+import seaborn as sea
+import matplotlib.pyplot as plt
+
+plt.figure(figsize = (8,6))
+sea.heatmap(conf_matrix,annot=True,fmt='d')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.show()
+
+print("Result of confusion Matrix is :")
+print("True Negative =",tn)
+print("False Positive =",fp)
+print("False Negative =",fn)
+print("True Positive =",tp)
+
+
+

@@ -1,0 +1,40 @@
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+
+
+data=pd.read_csv("D:/SEM-5/ML/Assignments/My Codes/Market_Basket_Optimisation.csv",header=None)
+
+data.head()
+
+#step2 :generate list of transaction
+transactions=[]
+for i in range(0,data.shape[0]):
+    transaction = [str(data.values[i, j]) for j in range(data.shape[1]) if str(data.values[i, j]) != 'nan']
+    transactions.append(transaction)
+
+# Step 3: Convert transactions to a one-hot encoded DataFrame
+from mlxtend.preprocessing import TransactionEncoder
+
+te=TransactionEncoder()
+te_data=te.fit(transactions).transform(transactions)
+df=pd.DataFrame(te_data,columns=te.columns_)
+
+# Step 4: Train the Apriori algorithm
+frequent_itemsets=apriori(df,min_support=0.01,use_colnames=True)
+
+# Step 5: Extract association rules
+rules=association_rules(frequent_itemsets,metric='confidence',min_threshold=0.2)
+
+# Display rules
+print("Generated Association Rules:")
+print(rules[['antecedents','consequents','support','confidence','lift']])
+
+import matplotlib.pyplot as plt
+
+plt.scatter(rules['support'],rules['confidence'],c=rules['lift'],cmap='viridis')
+plt.colorbar(label='lift')
+plt.xlabel('support')
+plt.ylabel('confidence')
+plt.title('support vs confidence colored by lift')
+plt.show()
+
